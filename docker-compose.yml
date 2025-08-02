@@ -1,0 +1,23 @@
+services:
+  remotion-render:
+    build: .
+    container_name: remotion-render
+    volumes:
+      - ./out:/usr/src/app/out
+    environment:
+      - NODE_ENV=production
+    command: ["node", "render.mjs"]
+  
+  remotion-dev:
+    build: .
+    container_name: remotion-dev
+    volumes:
+      - ./src:/usr/src/app/src
+      - ./out:/usr/src/app/out
+      - ./package.json:/usr/src/app/package.json
+      - ./tsconfig.json:/usr/src/app/tsconfig.json
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=development
+    command: ["npm", "run", "dev"] 
