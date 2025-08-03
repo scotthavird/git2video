@@ -492,12 +492,4 @@ export class IntegrationTestHelpers {
   }
 }
 
-// Export all utilities for easy import
-export {
-  mockRemotionHooks,
-  TestDataBuilder,
-  PerformanceTracker,
-  VideoAssertions,
-  ComponentTestUtils,
-  IntegrationTestHelpers
-};
+// All utilities are exported inline above

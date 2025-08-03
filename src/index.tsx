@@ -210,22 +210,101 @@ const LineByLineDemo: React.FC<z.infer<typeof LineByLineSchema>> = (props) => {
 };
 
 const PROverviewDemo: React.FC<z.infer<typeof PROverviewSchema>> = (props) => {
-  const samplePR = TestDataBuilder.createMockVideoMetadata({
+  // Create mock PR data that matches GitHubPullRequest interface
+  const samplePR = {
+    id: 123456,
+    number: 42,
     title: props.prTitle,
-    author: {
+    body: 'This PR implements a comprehensive user authentication system with secure password handling and session management.',
+    state: 'open' as const,
+    merged: false,
+    draft: false,
+    user: {
+      id: 12345,
       login: 'jane-dev',
-      avatarUrl: 'https://github.com/jane-dev.avatar',
+      avatar_url: 'https://github.com/jane-dev.avatar',
+      html_url: 'https://github.com/jane-dev',
+      type: 'User' as const,
       name: props.authorName,
       email: 'jane@example.com'
-    }
-  });
+    },
+    assignees: [],
+    reviewers: [],
+    labels: [
+      { id: 1, name: 'enhancement', color: '84b6eb', description: 'New feature or request' },
+      { id: 2, name: 'security', color: 'd73a4a', description: 'Security related changes' }
+    ],
+    milestone: undefined,
+    base: {
+      label: 'main',
+      ref: 'main',
+      sha: 'abc123',
+      user: { id: 1, login: 'repo-owner', avatar_url: '', html_url: '', type: 'User' as const },
+      repo: {
+        id: 1,
+        name: 'awesome-app',
+        full_name: 'company/awesome-app',
+        owner: { id: 1, login: 'company', avatar_url: '', html_url: '', type: 'User' as const },
+        html_url: 'https://github.com/company/awesome-app',
+        private: false,
+        fork: false,
+        default_branch: 'main'
+      }
+    },
+    head: {
+      label: 'feature/auth-system',
+      ref: 'feature/auth-system',
+      sha: 'def456',
+      user: { id: 12345, login: 'jane-dev', avatar_url: '', html_url: '', type: 'User' as const },
+      repo: {
+        id: 1,
+        name: 'awesome-app',
+        full_name: 'company/awesome-app',
+        owner: { id: 1, login: 'company', avatar_url: '', html_url: '', type: 'User' as const },
+        html_url: 'https://github.com/company/awesome-app',
+        private: false,
+        fork: false,
+        default_branch: 'main'
+      }
+    },
+    html_url: 'https://github.com/company/awesome-app/pull/42',
+    created_at: '2025-08-01T10:00:00Z',
+    updated_at: '2025-08-03T15:30:00Z',
+    closed_at: undefined,
+    merged_at: undefined,
+    merge_commit_sha: undefined,
+    mergeable: true,
+    mergeable_state: 'clean',
+    merged_by: undefined,
+    comments: 3,
+    review_comments: 5,
+    commits: 8,
+    additions: 125,
+    deletions: 42,
+    changed_files: 12
+  };
+
+  const sampleRepository = {
+    id: 1,
+    name: 'awesome-app',
+    full_name: 'company/awesome-app',
+    owner: { id: 1, login: 'company', avatar_url: '', html_url: '', type: 'User' as const },
+    html_url: 'https://github.com/company/awesome-app',
+    description: 'An awesome application with great features',
+    private: false,
+    fork: false,
+    language: 'TypeScript',
+    default_branch: 'main'
+  };
   
   return (
     <PRHeader
-      pr={samplePR}
-      showAvatar={true}
-      showStatus={props.showMetrics}
-      showMetrics={props.showMetrics}
+      pullRequest={samplePR}
+      repository={sampleRepository}
+      animationDelay={0}
+      showLabels={props.showMetrics}
+      showMilestone={props.showTimeline}
+      compact={false}
     />
   );
 };
