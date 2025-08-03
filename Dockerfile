@@ -34,8 +34,9 @@ COPY remotion.config.ts ./
 # Install Chrome Headless Shell
 RUN npx remotion browser ensure
 
-# Copy render script
+# Copy render scripts
 COPY render.mjs render.mjs
+COPY render-pr-video.mjs render-pr-video.mjs
 
 # Create output directory with proper permissions
 RUN mkdir -p /usr/src/app/out && chmod 777 /usr/src/app/out
