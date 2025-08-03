@@ -9,6 +9,7 @@ import { PRHeader } from './components/molecules/pr/PRHeader';
 import { CommitCard } from './components/molecules/pr/CommitCard';
 import { processGitHubFile } from './components/molecules/pr/code/utils/diffProcessor';
 import { TestDataBuilder } from './video/integration/testUtils';
+import { PRSummaryVideo, PRDetailedVideo, PRTechnicalVideo } from './compositions/PRVideoCompositions';
 
 // Define schema for visual editing
 export const HelloWorldSchema = z.object({
@@ -392,6 +393,67 @@ export const RemotionRoot: React.FC = () => {
           authorName: 'Jane Developer',
           showMetrics: true,
           showTimeline: true,
+        }}
+      />
+      
+      {/* Production PR Video Compositions */}
+      <Composition
+        id="PRSummaryVideo"
+        component={PRSummaryVideo}
+        durationInFrames={420} // 14 seconds at 30fps
+        fps={30}
+        width={1920}
+        height={1080}
+        schema={z.object({
+          prData: z.any(),
+          metadata: z.any(),
+          script: z.any(),
+          title: z.string().optional(),
+        })}
+        defaultProps={{
+          prData: {},
+          metadata: {},
+          script: {},
+        }}
+      />
+      
+      <Composition
+        id="PRDetailedVideo"
+        component={PRDetailedVideo}
+        durationInFrames={1260} // 42 seconds at 30fps (will be dynamic)
+        fps={30}
+        width={1920}
+        height={1080}
+        schema={z.object({
+          prData: z.any(),
+          metadata: z.any(),
+          script: z.any(),
+          title: z.string().optional(),
+        })}
+        defaultProps={{
+          prData: {},
+          metadata: {},
+          script: {},
+        }}
+      />
+      
+      <Composition
+        id="PRTechnicalVideo"
+        component={PRTechnicalVideo}
+        durationInFrames={1800} // 60 seconds at 30fps (will be dynamic)
+        fps={30}
+        width={1920}
+        height={1080}
+        schema={z.object({
+          prData: z.any(),
+          metadata: z.any(),
+          script: z.any(),
+          title: z.string().optional(),
+        })}
+        defaultProps={{
+          prData: {},
+          metadata: {},
+          script: {},
         }}
       />
     </>

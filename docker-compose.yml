@@ -1,4 +1,5 @@
 services:
+  # Original template render (for testing)
   remotion-render:
     build: .
     container_name: remotion-render
@@ -7,6 +8,23 @@ services:
     environment:
       - NODE_ENV=production
     command: ["node", "render.mjs"]
+
+  # PR Video Generation (NEW)
+  pr-video-render:
+    build: .
+    container_name: pr-video-render
+    volumes:
+      - ./out:/usr/src/app/out
+    environment:
+      - NODE_ENV=production
+      # GitHub Configuration (set these via environment or .env file)
+      - GITHUB_TOKEN=${GITHUB_TOKEN}
+      - GITHUB_REPOSITORY=${GITHUB_REPOSITORY}
+      - PR_NUMBER=${PR_NUMBER}
+      - VIDEO_TYPE=${VIDEO_TYPE:-summary}
+      - VIDEO_TITLE=${VIDEO_TITLE}
+      - OUTPUT_NAME=${OUTPUT_NAME}
+    command: ["node", "render-pr-video.mjs"]
   
   remotion-dev:
     build: .
