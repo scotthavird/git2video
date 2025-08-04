@@ -415,24 +415,32 @@ export class GitHubPRFetcher {
     const userMap = new Map<number, GitHubUser>();
 
     // Add PR author
-    userMap.set(pullRequest.user.id, pullRequest.user);
+    if (pullRequest?.user) {
+      userMap.set(pullRequest.user.id, pullRequest.user);
+    }
 
-    // Add assignees and reviewers
-    pullRequest.assignees.forEach(user => userMap.set(user.id, user));
-    pullRequest.reviewers.forEach(user => userMap.set(user.id, user));
+    // Add assignees and reviewers (with null checks)
+    (pullRequest?.assignees || []).forEach(user => userMap.set(user.id, user));
+    (pullRequest?.reviewers || []).forEach(user => userMap.set(user.id, user));
 
     // Add commit authors and committers
-    commits.forEach(commit => {
+    (commits || []).forEach(commit => {
       if (commit.author) userMap.set(commit.author.id, commit.author);
       if (commit.committer) userMap.set(commit.committer.id, commit.committer);
     });
 
     // Add reviewers
-    reviews.forEach(review => userMap.set(review.user.id, review.user));
+    (reviews || []).forEach(review => {
+      if (review?.user) userMap.set(review.user.id, review.user);
+    });
 
     // Add comment authors
-    reviewComments.forEach(comment => userMap.set(comment.user.id, comment.user));
-    issueComments.forEach(comment => userMap.set(comment.user.id, comment.user));
+    (reviewComments || []).forEach(comment => {
+      if (comment?.user) userMap.set(comment.user.id, comment.user);
+    });
+    (issueComments || []).forEach(comment => {
+      if (comment?.user) userMap.set(comment.user.id, comment.user);
+    });
 
     return Array.from(userMap.values());
   }
@@ -441,21 +449,22 @@ export class GitHubPRFetcher {
    * Calculate code statistics from files and commits
    */
   private calculateCodeStats(files: GitHubFile[], commits: GitHubCommit[]) {
-    const totalAdditions = files.reduce((sum, file) => sum + file.additions, 0);
-    const totalDeletions = files.reduce((sum, file) => sum + file.deletions, 0);
-    const totalFiles = files.length;
+    const safeFiles = files || [];
+    const totalAdditions = safeFiles.reduce((sum, file) => sum + (file.additions || 0), 0);
+    const totalDeletions = safeFiles.reduce((sum, file) => sum + (file.deletions || 0), 0);
+    const totalFiles = safeFiles.length;
 
     // Language breakdown based on file extensions
     const languageBreakdown: Record<string, number> = {};
     const fileTypes: Record<string, number> = {};
 
-    files.forEach(file => {
-      const extension = file.filename.split('.').pop()?.toLowerCase() || 'unknown';
+    safeFiles.forEach(file => {
+      const extension = file.filename?.split('.').pop()?.toLowerCase() || 'unknown';
       fileTypes[extension] = (fileTypes[extension] || 0) + 1;
 
       // Map extensions to languages (basic mapping)
       const language = this.mapExtensionToLanguage(extension);
-      languageBreakdown[language] = (languageBreakdown[language] || 0) + file.changes;
+      languageBreakdown[language] = (languageBreakdown[language] || 0) + (file.changes || 0);
     });
 
     return {
@@ -475,13 +484,16 @@ export class GitHubPRFetcher {
     reviewComments: GitHubReviewComment[],
     timeline: GitHubTimelineEvent[]
   ) {
-    const approvals = reviews.filter(r => r.state === 'APPROVED').length;
-    const changesRequested = reviews.filter(r => r.state === 'CHANGES_REQUESTED').length;
-    const comments = reviewComments.length;
+    const safeReviews = reviews || [];
+    const safeReviewComments = reviewComments || [];
+    
+    const approvals = safeReviews.filter(r => r?.state === 'APPROVED').length;
+    const changesRequested = safeReviews.filter(r => r?.state === 'CHANGES_REQUESTED').length;
+    const comments = safeReviewComments.length;
 
     // Calculate average review time (from PR creation to first review)
-    const firstReview = reviews
-      .filter(r => r.submitted_at)
+    const firstReview = safeReviews
+      .filter(r => r?.submitted_at)
       .sort((a, b) => new Date(a.submitted_at!).getTime() - new Date(b.submitted_at!).getTime())[0];
 
     let averageReviewTime = 0;
@@ -506,15 +518,17 @@ export class GitHubPRFetcher {
     reviews: GitHubReview[],
     timeline: GitHubTimelineEvent[]
   ) {
-    const createdAt = new Date(pullRequest.created_at);
-    const lastUpdateAt = new Date(pullRequest.updated_at);
-    const mergedAt = pullRequest.merged_at ? new Date(pullRequest.merged_at) : undefined;
-    const closedAt = pullRequest.closed_at ? new Date(pullRequest.closed_at) : undefined;
+    const createdAt = pullRequest?.created_at ? new Date(pullRequest.created_at) : new Date();
+    const lastUpdateAt = pullRequest?.updated_at ? new Date(pullRequest.updated_at) : new Date();
+    const mergedAt = pullRequest?.merged_at ? new Date(pullRequest.merged_at) : undefined;
+    const closedAt = pullRequest?.closed_at ? new Date(pullRequest.closed_at) : undefined;
 
-    const firstReviewAt = reviews
-      .filter(r => r.submitted_at)
-      .sort((a, b) => new Date(a.submitted_at!).getTime() - new Date(b.submitted_at!).getTime())[0]
-      ?.submitted_at ? new Date(reviews[0].submitted_at!) : undefined;
+    const safeReviews = reviews || [];
+    const firstReview = safeReviews
+      .filter(r => r?.submitted_at)
+      .sort((a, b) => new Date(a.submitted_at!).getTime() - new Date(b.submitted_at!).getTime())[0];
+    
+    const firstReviewAt = firstReview?.submitted_at ? new Date(firstReview.submitted_at) : undefined;
 
     const totalDuration = lastUpdateAt.getTime() - createdAt.getTime();
     const reviewDuration = firstReviewAt 
