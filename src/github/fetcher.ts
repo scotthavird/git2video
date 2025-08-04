@@ -133,21 +133,32 @@ export class GitHubPRFetcher {
       options.maxConcurrency
     );
 
-    // Parse results based on order
+    // Parse results based on order with error checking
     let resultIndex = 0;
-    const commits = options.includeCommits ? results[resultIndex++].data : [];
-    const files = options.includeFiles ? results[resultIndex++].data : [];
-    const reviews = options.includeReviews ? results[resultIndex++].data : [];
+    
+    const commits = options.includeCommits ? 
+      (results[resultIndex] ? results[resultIndex++].data : []) : [];
+    
+    const files = options.includeFiles ? 
+      (results[resultIndex] ? results[resultIndex++].data : []) : [];
+    
+    const reviews = options.includeReviews ? 
+      (results[resultIndex] ? results[resultIndex++].data : []) : [];
     
     let reviewComments: GitHubReviewComment[] = [];
     let issueComments: GitHubIssueComment[] = [];
     if (options.includeComments) {
-      const [rc, ic] = results[resultIndex++].data;
-      reviewComments = rc;
-      issueComments = ic;
+      if (results[resultIndex] && results[resultIndex].data) {
+        const [rc, ic] = results[resultIndex++].data;
+        reviewComments = rc || [];
+        issueComments = ic || [];
+      } else {
+        resultIndex++; // Skip the undefined result
+      }
     }
     
-    const timeline = options.includeTimeline ? results[resultIndex++].data : [];
+    const timeline = options.includeTimeline ?
+      (results[resultIndex] ? results[resultIndex++].data : []) : [];
 
     console.log('Parallel fetch completed, processing data...');
 
@@ -217,10 +228,17 @@ export class GitHubPRFetcher {
    */
   async fetchPullRequest(owner: string, repo: string, prNumber: number): Promise<GitHubPullRequest> {
     console.log(`Fetching PR ${owner}/${repo}#${prNumber}...`);
-    const response = await this.client.request<GitHubPullRequest>(
-      `/repos/${owner}/${repo}/pulls/${prNumber}`
-    );
-    return response.data;
+    try {
+      const response = await this.client.request<GitHubPullRequest>(
+        `/repos/${owner}/${repo}/pulls/${prNumber}`
+      );
+      if (!response || !response.data) {
+        throw new Error(`Invalid response for PR ${owner}/${repo}#${prNumber}: ${JSON.stringify(response)}`);
+      }
+      return response.data;
+    } catch (error) {
+      throw new Error(`Failed to fetch PR ${owner}/${repo}#${prNumber}: ${error.message}`);
+    }
   }
 
   /**
@@ -228,10 +246,17 @@ export class GitHubPRFetcher {
    */
   async fetchRepository(owner: string, repo: string): Promise<GitHubRepository> {
     console.log(`Fetching repository ${owner}/${repo}...`);
-    const response = await this.client.request<GitHubRepository>(
-      `/repos/${owner}/${repo}`
-    );
-    return response.data;
+    try {
+      const response = await this.client.request<GitHubRepository>(
+        `/repos/${owner}/${repo}`
+      );
+      if (!response || !response.data) {
+        throw new Error(`Invalid response for repository ${owner}/${repo}: ${JSON.stringify(response)}`);
+      }
+      return response.data;
+    } catch (error) {
+      throw new Error(`Failed to fetch repository ${owner}/${repo}: ${error.message}`);
+    }
   }
 
   /**

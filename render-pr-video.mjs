@@ -50,14 +50,16 @@ if (!config.prNumber) {
   process.exit(1);
 }
 
+// Import GitHub client and related services
+const { GitHubApiClient } = await import('./src/github/client.js');
+const { GitHubPRFetcher } = await import('./src/github/fetcher.js');
+const { PRVideoTransformer } = await import('./src/github/transformer.js');
+const { ScriptGenerator } = await import('./src/video/scripts/ScriptGenerator.js');
+
 async function fetchPRData() {
   console.log('📡 Fetching PR data from GitHub...');
   
   try {
-    // Import GitHub client and related services
-    const { GitHubApiClient } = await import('./src/github/client');
-    const { GitHubPRFetcher } = await import('./src/github/fetcher');
-    
     const client = new GitHubApiClient({
       token: config.githubToken,
       timeout: 30000,
@@ -69,15 +71,6 @@ async function fetchPRData() {
 
     console.log(`   Repository: ${owner}/${repo}`);
     console.log(`   PR Number: #${prNumber}`);
-    
-    // Validate repository format
-    if (!owner || !repo) {
-      throw new Error(`Invalid repository format: ${config.repository}. Expected format: owner/repo`);
-    }
-    
-    if (isNaN(prNumber)) {
-      throw new Error(`Invalid PR number: ${config.prNumber}. Expected a number`);
-    }
 
     // Fetch comprehensive PR data
     const prData = await fetcher.fetchPRData(owner, repo, prNumber, {
@@ -106,10 +99,6 @@ async function generateVideoContent(prData) {
   console.log('🎬 Generating video content...');
 
   try {
-    // Import video generation modules
-    const { PRVideoTransformer } = await import('./src/github/transformer');
-    const { ScriptGenerator } = await import('./src/video/scripts/ScriptGenerator');
-    
     // Transform PR data for video
     const transformer = new PRVideoTransformer();
     const videoMetadata = transformer.transform(prData, config.videoType);
