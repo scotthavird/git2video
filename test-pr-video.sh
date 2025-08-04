@@ -57,7 +57,7 @@ echo "🚀 Starting PR video generation..."
 echo ""
 
 # Run the Docker container
-docker-compose run --rm pr-video-render
+docker compose run --rm pr-video-render
 
 echo ""
 echo "✅ Video generation completed!"

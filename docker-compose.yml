@@ -24,7 +24,7 @@ services:
       - VIDEO_TYPE=${VIDEO_TYPE:-summary}
       - VIDEO_TITLE=${VIDEO_TITLE}
       - OUTPUT_NAME=${OUTPUT_NAME}
-    command: ["node", "render-pr-video.mjs"]
+    command: ["npx", "tsx", "render-pr-video.ts"]
   
   remotion-dev:
     build: .

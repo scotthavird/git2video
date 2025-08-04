@@ -36,7 +36,7 @@ RUN npx remotion browser ensure
 
 # Copy render scripts
 COPY render.mjs render.mjs
-COPY render-pr-video.mjs render-pr-video.mjs
+COPY render-pr-video.ts render-pr-video.ts
 
 # Create output directory with proper permissions
 RUN mkdir -p /usr/src/app/out && chmod 777 /usr/src/app/out

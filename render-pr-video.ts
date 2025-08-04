@@ -50,20 +50,22 @@ if (!config.prNumber) {
   process.exit(1);
 }
 
-// Import GitHub client
-const { GitHubClient } = await import('./src/github/client.js');
-const { PRVideoTransformer } = await import('./src/github/transformer.js');
-const { ScriptGenerator } = await import('./src/video/scripts/ScriptGenerator.js');
+// Import GitHub client and related services
+const { GitHubApiClient } = await import('./src/github/client');
+const { GitHubPRFetcher } = await import('./src/github/fetcher'); 
+const { PRVideoTransformer } = await import('./src/github/transformer');
+const { ScriptGenerator } = await import('./src/video/scripts/ScriptGenerator');
 
 async function fetchPRData() {
   console.log('📡 Fetching PR data from GitHub...');
   
   try {
-    const client = new GitHubClient({
+    const client = new GitHubApiClient({
       token: config.githubToken,
       timeout: 30000,
     });
 
+    const fetcher = new GitHubPRFetcher(client);
     const [owner, repo] = config.repository.split('/');
     const prNumber = parseInt(config.prNumber);
 
@@ -71,7 +73,7 @@ async function fetchPRData() {
     console.log(`   PR Number: #${prNumber}`);
 
     // Fetch comprehensive PR data
-    const prData = await client.fetchPRData(owner, repo, prNumber, {
+    const prData = await fetcher.fetchPRData(owner, repo, prNumber, {
       includeCommits: true,
       includeFiles: true,
       includeReviews: true,
