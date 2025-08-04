@@ -50,16 +50,14 @@ if (!config.prNumber) {
   process.exit(1);
 }
 
-// Import GitHub client and related services
-const { GitHubApiClient } = await import('./src/github/client');
-const { GitHubPRFetcher } = await import('./src/github/fetcher'); 
-const { PRVideoTransformer } = await import('./src/github/transformer');
-const { ScriptGenerator } = await import('./src/video/scripts/ScriptGenerator');
-
 async function fetchPRData() {
   console.log('📡 Fetching PR data from GitHub...');
   
   try {
+    // Import GitHub client and related services
+    const { GitHubApiClient } = await import('./src/github/client');
+    const { GitHubPRFetcher } = await import('./src/github/fetcher');
+    
     const client = new GitHubApiClient({
       token: config.githubToken,
       timeout: 30000,
@@ -99,6 +97,10 @@ async function generateVideoContent(prData) {
   console.log('🎬 Generating video content...');
 
   try {
+    // Import video generation modules
+    const { PRVideoTransformer } = await import('./src/github/transformer');
+    const { ScriptGenerator } = await import('./src/video/scripts/ScriptGenerator');
+    
     // Transform PR data for video
     const transformer = new PRVideoTransformer();
     const videoMetadata = transformer.transform(prData, config.videoType);
