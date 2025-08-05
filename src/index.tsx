@@ -411,9 +411,97 @@ export const RemotionRoot: React.FC = () => {
           title: z.string().optional(),
         })}
         defaultProps={{
-          prData: {},
-          metadata: {},
-          script: {},
+          prData: {
+            pullRequest: {
+              id: 123456,
+              number: 42,
+              title: 'Example PR',
+              body: 'Example PR description',
+              state: 'open',
+              merged: false,
+              draft: false,
+              user: { id: 1, login: 'user', avatar_url: '', html_url: '', type: 'User' },
+              assignees: [],
+              reviewers: [],
+              labels: [],
+              base: { label: 'main', ref: 'main', sha: 'abc123', user: { id: 1, login: 'user', avatar_url: '', html_url: '', type: 'User' }, repo: { id: 1, name: 'repo', full_name: 'user/repo', owner: { id: 1, login: 'user', avatar_url: '', html_url: '', type: 'User' }, html_url: '', private: false, fork: false, default_branch: 'main' } },
+              head: { label: 'feature', ref: 'feature', sha: 'def456', user: { id: 1, login: 'user', avatar_url: '', html_url: '', type: 'User' }, repo: { id: 1, name: 'repo', full_name: 'user/repo', owner: { id: 1, login: 'user', avatar_url: '', html_url: '', type: 'User' }, html_url: '', private: false, fork: false, default_branch: 'main' } },
+              html_url: '',
+              created_at: '2025-01-01T00:00:00Z',
+              updated_at: '2025-01-01T00:00:00Z',
+              comments: 0,
+              review_comments: 0,
+              commits: 1,
+              additions: 10,
+              deletions: 5,
+              changed_files: 2
+            },
+            commits: [],
+            files: [],
+            reviews: [],
+            reviewComments: [],
+            issueComments: [],
+            timeline: [],
+            repository: { id: 1, name: 'repo', full_name: 'user/repo', owner: { id: 1, login: 'user', avatar_url: '', html_url: '', type: 'User' }, html_url: '', private: false, fork: false, default_branch: 'main' },
+            participants: [],
+            codeStats: { totalAdditions: 10, totalDeletions: 5, totalFiles: 2, languageBreakdown: {}, fileTypes: {} },
+            reviewStats: { approvals: 0, changesRequested: 0, comments: 0 }
+          },
+          metadata: {
+            title: 'Example PR Video',
+            subtitle: 'Pull Request Overview',
+            description: 'Video showing PR changes',
+            duration: 60,
+            scenes: [],
+            participants: [],
+            keyMetrics: {
+              totalCommits: 1,
+              totalFiles: 2,
+              totalAdditions: 10,
+              totalDeletions: 5,
+              totalReviews: 0,
+              totalComments: 0,
+              timeToFirstReview: null,
+              timeToMerge: null,
+              participantCount: 1,
+              primaryLanguage: 'TypeScript'
+            },
+            theme: {
+              primaryColor: '#0066CC',
+              secondaryColor: '#33CC33',
+              backgroundColor: '#1A1A1A',
+              textColor: '#FFFFFF',
+              style: 'modern'
+            }
+          },
+          script: {
+            id: 'default-script',
+            title: 'Default Script',
+            description: 'Default script for preview',
+            targetDuration: 60,
+            sections: [],
+            metadata: {
+              templateType: 'summary',
+              generatedAt: new Date(),
+              version: '1.0.0',
+              selectionStrategy: {
+                name: 'default',
+                criteria: { importanceThreshold: 0.5, relevanceScoring: { factors: [], algorithm: 'weighted_sum', normalization: 'min_max' }, freshnessWeight: 0.2, audienceAlignmentWeight: 0.5 },
+                prioritization: [],
+                filtering: [],
+                adaptation: []
+              },
+              adaptations: {
+                duration: { shortForm: { name: 'default', priorityAdjustments: {}, durationAdjustments: {}, contentModifications: [] }, mediumForm: { name: 'default', priorityAdjustments: {}, durationAdjustments: {}, contentModifications: [] }, longForm: { name: 'default', priorityAdjustments: {}, durationAdjustments: {}, contentModifications: [] }, cuttingPriorities: [] },
+                audience: { languageSimplification: [], technicalDepth: [], emphasisAdjustments: [] },
+                content: { transformations: [], summarization: [], expansion: [] },
+                technical: { codeExamples: [], jargonExplanation: [], conceptIntroduction: [] }
+              },
+              quality: { coherence: 1, engagement: 1, accuracy: 1, durationCompliance: 1, audienceAlignment: 1, overall: 1, details: { strengths: [], weaknesses: [], suggestions: [], risks: [] } }
+            },
+            audience: { primary: 'engineering', technicalLevel: 'intermediate', projectFamiliarity: 'familiar', communicationStyle: 'technical' },
+            style: { tone: 'professional', pacing: 'moderate', approach: 'analytical', complexity: 'moderate', emphasis: 'process_focused' }
+          }
         }}
       />
       
@@ -431,9 +519,97 @@ export const RemotionRoot: React.FC = () => {
           title: z.string().optional(),
         })}
         defaultProps={{
-          prData: {},
-          metadata: {},
-          script: {},
+          prData: {
+            pullRequest: {
+              id: 123456,
+              number: 42,
+              title: 'Example PR',
+              body: 'Example PR description',
+              state: 'open',
+              merged: false,
+              draft: false,
+              user: { id: 1, login: 'user', avatar_url: '', html_url: '', type: 'User' },
+              assignees: [],
+              reviewers: [],
+              labels: [],
+              base: { label: 'main', ref: 'main', sha: 'abc123', user: { id: 1, login: 'user', avatar_url: '', html_url: '', type: 'User' }, repo: { id: 1, name: 'repo', full_name: 'user/repo', owner: { id: 1, login: 'user', avatar_url: '', html_url: '', type: 'User' }, html_url: '', private: false, fork: false, default_branch: 'main' } },
+              head: { label: 'feature', ref: 'feature', sha: 'def456', user: { id: 1, login: 'user', avatar_url: '', html_url: '', type: 'User' }, repo: { id: 1, name: 'repo', full_name: 'user/repo', owner: { id: 1, login: 'user', avatar_url: '', html_url: '', type: 'User' }, html_url: '', private: false, fork: false, default_branch: 'main' } },
+              html_url: '',
+              created_at: '2025-01-01T00:00:00Z',
+              updated_at: '2025-01-01T00:00:00Z',
+              comments: 0,
+              review_comments: 0,
+              commits: 1,
+              additions: 10,
+              deletions: 5,
+              changed_files: 2
+            },
+            commits: [],
+            files: [],
+            reviews: [],
+            reviewComments: [],
+            issueComments: [],
+            timeline: [],
+            repository: { id: 1, name: 'repo', full_name: 'user/repo', owner: { id: 1, login: 'user', avatar_url: '', html_url: '', type: 'User' }, html_url: '', private: false, fork: false, default_branch: 'main' },
+            participants: [],
+            codeStats: { totalAdditions: 10, totalDeletions: 5, totalFiles: 2, languageBreakdown: {}, fileTypes: {} },
+            reviewStats: { approvals: 0, changesRequested: 0, comments: 0 }
+          },
+          metadata: {
+            title: 'Example PR Video',
+            subtitle: 'Pull Request Overview',
+            description: 'Video showing PR changes',
+            duration: 60,
+            scenes: [],
+            participants: [],
+            keyMetrics: {
+              totalCommits: 1,
+              totalFiles: 2,
+              totalAdditions: 10,
+              totalDeletions: 5,
+              totalReviews: 0,
+              totalComments: 0,
+              timeToFirstReview: null,
+              timeToMerge: null,
+              participantCount: 1,
+              primaryLanguage: 'TypeScript'
+            },
+            theme: {
+              primaryColor: '#0066CC',
+              secondaryColor: '#33CC33',
+              backgroundColor: '#1A1A1A',
+              textColor: '#FFFFFF',
+              style: 'modern'
+            }
+          },
+          script: {
+            id: 'default-script',
+            title: 'Default Script',
+            description: 'Default script for preview',
+            targetDuration: 60,
+            sections: [],
+            metadata: {
+              templateType: 'summary',
+              generatedAt: new Date(),
+              version: '1.0.0',
+              selectionStrategy: {
+                name: 'default',
+                criteria: { importanceThreshold: 0.5, relevanceScoring: { factors: [], algorithm: 'weighted_sum', normalization: 'min_max' }, freshnessWeight: 0.2, audienceAlignmentWeight: 0.5 },
+                prioritization: [],
+                filtering: [],
+                adaptation: []
+              },
+              adaptations: {
+                duration: { shortForm: { name: 'default', priorityAdjustments: {}, durationAdjustments: {}, contentModifications: [] }, mediumForm: { name: 'default', priorityAdjustments: {}, durationAdjustments: {}, contentModifications: [] }, longForm: { name: 'default', priorityAdjustments: {}, durationAdjustments: {}, contentModifications: [] }, cuttingPriorities: [] },
+                audience: { languageSimplification: [], technicalDepth: [], emphasisAdjustments: [] },
+                content: { transformations: [], summarization: [], expansion: [] },
+                technical: { codeExamples: [], jargonExplanation: [], conceptIntroduction: [] }
+              },
+              quality: { coherence: 1, engagement: 1, accuracy: 1, durationCompliance: 1, audienceAlignment: 1, overall: 1, details: { strengths: [], weaknesses: [], suggestions: [], risks: [] } }
+            },
+            audience: { primary: 'engineering', technicalLevel: 'intermediate', projectFamiliarity: 'familiar', communicationStyle: 'technical' },
+            style: { tone: 'professional', pacing: 'moderate', approach: 'analytical', complexity: 'moderate', emphasis: 'process_focused' }
+          }
         }}
       />
       
@@ -451,9 +627,97 @@ export const RemotionRoot: React.FC = () => {
           title: z.string().optional(),
         })}
         defaultProps={{
-          prData: {},
-          metadata: {},
-          script: {},
+          prData: {
+            pullRequest: {
+              id: 123456,
+              number: 42,
+              title: 'Example PR',
+              body: 'Example PR description',
+              state: 'open',
+              merged: false,
+              draft: false,
+              user: { id: 1, login: 'user', avatar_url: '', html_url: '', type: 'User' },
+              assignees: [],
+              reviewers: [],
+              labels: [],
+              base: { label: 'main', ref: 'main', sha: 'abc123', user: { id: 1, login: 'user', avatar_url: '', html_url: '', type: 'User' }, repo: { id: 1, name: 'repo', full_name: 'user/repo', owner: { id: 1, login: 'user', avatar_url: '', html_url: '', type: 'User' }, html_url: '', private: false, fork: false, default_branch: 'main' } },
+              head: { label: 'feature', ref: 'feature', sha: 'def456', user: { id: 1, login: 'user', avatar_url: '', html_url: '', type: 'User' }, repo: { id: 1, name: 'repo', full_name: 'user/repo', owner: { id: 1, login: 'user', avatar_url: '', html_url: '', type: 'User' }, html_url: '', private: false, fork: false, default_branch: 'main' } },
+              html_url: '',
+              created_at: '2025-01-01T00:00:00Z',
+              updated_at: '2025-01-01T00:00:00Z',
+              comments: 0,
+              review_comments: 0,
+              commits: 1,
+              additions: 10,
+              deletions: 5,
+              changed_files: 2
+            },
+            commits: [],
+            files: [],
+            reviews: [],
+            reviewComments: [],
+            issueComments: [],
+            timeline: [],
+            repository: { id: 1, name: 'repo', full_name: 'user/repo', owner: { id: 1, login: 'user', avatar_url: '', html_url: '', type: 'User' }, html_url: '', private: false, fork: false, default_branch: 'main' },
+            participants: [],
+            codeStats: { totalAdditions: 10, totalDeletions: 5, totalFiles: 2, languageBreakdown: {}, fileTypes: {} },
+            reviewStats: { approvals: 0, changesRequested: 0, comments: 0 }
+          },
+          metadata: {
+            title: 'Example PR Video',
+            subtitle: 'Pull Request Overview',
+            description: 'Video showing PR changes',
+            duration: 60,
+            scenes: [],
+            participants: [],
+            keyMetrics: {
+              totalCommits: 1,
+              totalFiles: 2,
+              totalAdditions: 10,
+              totalDeletions: 5,
+              totalReviews: 0,
+              totalComments: 0,
+              timeToFirstReview: null,
+              timeToMerge: null,
+              participantCount: 1,
+              primaryLanguage: 'TypeScript'
+            },
+            theme: {
+              primaryColor: '#0066CC',
+              secondaryColor: '#33CC33',
+              backgroundColor: '#1A1A1A',
+              textColor: '#FFFFFF',
+              style: 'modern'
+            }
+          },
+          script: {
+            id: 'default-script',
+            title: 'Default Script',
+            description: 'Default script for preview',
+            targetDuration: 60,
+            sections: [],
+            metadata: {
+              templateType: 'summary',
+              generatedAt: new Date(),
+              version: '1.0.0',
+              selectionStrategy: {
+                name: 'default',
+                criteria: { importanceThreshold: 0.5, relevanceScoring: { factors: [], algorithm: 'weighted_sum', normalization: 'min_max' }, freshnessWeight: 0.2, audienceAlignmentWeight: 0.5 },
+                prioritization: [],
+                filtering: [],
+                adaptation: []
+              },
+              adaptations: {
+                duration: { shortForm: { name: 'default', priorityAdjustments: {}, durationAdjustments: {}, contentModifications: [] }, mediumForm: { name: 'default', priorityAdjustments: {}, durationAdjustments: {}, contentModifications: [] }, longForm: { name: 'default', priorityAdjustments: {}, durationAdjustments: {}, contentModifications: [] }, cuttingPriorities: [] },
+                audience: { languageSimplification: [], technicalDepth: [], emphasisAdjustments: [] },
+                content: { transformations: [], summarization: [], expansion: [] },
+                technical: { codeExamples: [], jargonExplanation: [], conceptIntroduction: [] }
+              },
+              quality: { coherence: 1, engagement: 1, accuracy: 1, durationCompliance: 1, audienceAlignment: 1, overall: 1, details: { strengths: [], weaknesses: [], suggestions: [], risks: [] } }
+            },
+            audience: { primary: 'engineering', technicalLevel: 'intermediate', projectFamiliarity: 'familiar', communicationStyle: 'technical' },
+            style: { tone: 'professional', pacing: 'moderate', approach: 'analytical', complexity: 'moderate', emphasis: 'process_focused' }
+          }
         }}
       />
     </>

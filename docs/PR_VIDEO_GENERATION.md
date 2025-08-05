@@ -73,18 +73,42 @@ VIDEO_TYPE=detailed \
 
 ## 🏃‍♂️ GitHub Actions Integration
 
-### Basic Workflow
+### Automatic + Manual Workflow (Recommended)
+
+The project includes a complete workflow that supports both automatic generation on PR merge and manual ad-hoc generation:
+
+**File**: `.github/workflows/pr-video-on-merge.yml`
 
 ```yaml
 name: Generate PR Video
+
 on:
   pull_request:
     types: [closed]
+  workflow_dispatch:
+    inputs:
+      pr_number:
+        description: 'PR number to generate video for'
+        required: true
+        type: string
+      video_type:
+        description: 'Video type'
+        required: false
+        default: 'summary'
+        type: choice
+        options:
+          - summary
+          - detailed
+          - technical
+      output_name:
+        description: 'Custom output filename (optional)'
+        required: false
+        type: string
 
 jobs:
-  generate-video:
+  generate-pr-video:
     runs-on: ubuntu-latest
-    if: github.event.pull_request.merged == true
+    if: github.event.pull_request.merged == true || github.event_name == 'workflow_dispatch'
     
     steps:
     - uses: actions/checkout@v4
@@ -92,22 +116,37 @@ jobs:
     - name: Generate PR Video
       run: |
         docker run --rm \
-          -v ${{ github.workspace }}/out:/usr/src/app/out \
+          -v $(pwd)/output:/usr/src/app/out \
           -e GITHUB_TOKEN=${{ secrets.GITHUB_TOKEN }} \
           -e GITHUB_REPOSITORY=${{ github.repository }} \
-          -e PR_NUMBER=${{ github.event.number }} \
-          -e VIDEO_TYPE=summary \
-          ghcr.io/your-org/git2video:latest \
+          -e PR_NUMBER=${{ steps.params.outputs.pr_number }} \
+          -e VIDEO_TYPE=${{ steps.params.outputs.video_type }} \
+          -e OUTPUT_NAME=${{ steps.params.outputs.output_name }} \
+          ghcr.io/${{ github.repository }}:main \
           node render-pr-video.mjs
     
-    - name: Upload Video
-      uses: actions/upload-artifact@v4
+    - name: Create Release with Video
+      uses: softprops/action-gh-release@v1
       with:
-        name: pr-video
-        path: out/*.mp4
+        files: ./output/*.mp4
+        tag_name: pr-video-${{ steps.params.outputs.pr_number }}-${{ steps.params.outputs.trigger_type }}
 ```
 
-### Advanced Workflow with Multiple Types
+### Usage Modes
+
+**🤖 Automatic Mode:**
+- Triggers when PR is merged into main
+- Uses `summary` video type
+- Creates release and comments on PR
+- Zero configuration required
+
+**🎯 Manual Mode:**
+- Run via Actions tab → "Generate PR Video"
+- Choose any PR number and video type
+- Test different video styles
+- Perfect for experimentation
+
+### Basic Workflow (Minimal Setup)
 
 ```yaml
 name: PR Video Suite
