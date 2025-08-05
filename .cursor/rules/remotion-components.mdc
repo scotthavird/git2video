@@ -1,7 +1,3 @@
----
-description: Remotion component development patterns, atomic design hierarchy, animation techniques, and testing strategies
-globs: src/components/**/*.tsx,src/components/**/*.ts
----
 # Remotion Component Development Patterns
 
 ## Component Structure
@@ -15,6 +11,39 @@ Each component follows this structure:
 - **Atoms**: Basic building blocks (AnimatedText, AnimatedCircle, ScrollingPage)
 - **Molecules**: Composite components (IntroSection, ContentSection, OutroSection)
 - **Organisms**: Main compositions (HelloWorldComposition)
+
+## Reference Projects for Learning
+
+### recorder-main/ (Video Recording & Editing)
+Study these patterns for advanced video features:
+- **Video Recording**: `src/` - Browser-based video capture with device selection
+- **Caption Processing**: `remotion/captions/` - Whisper transcription with editing
+- **Scene Management**: `remotion/scenes/` - Multi-scene composition with transitions
+- **B-Roll Integration**: `remotion/scenes/BRoll/` - Background video scaling
+- **Real-time Preview**: `remotion/` - Live editing capabilities
+- **Layout System**: `remotion/layout/` - Responsive layout calculations
+
+Key patterns to apply:
+- Device enumeration and media capture
+- Multi-track audio processing
+- Complex state management for video editing
+- Smooth transition animations between scenes
+- File upload and processing workflows
+
+### template-code-hike-main/ (Code-Focused Videos)
+Study these patterns for educational content:
+- **Code Highlighting**: `src/annotations/` - Syntax highlighting with annotations
+- **Progress Tracking**: `src/ProgressBar.tsx` - Visual progress indicators
+- **Metadata Generation**: `src/calculate-metadata/` - Automatic code analysis
+- **Theme System**: `src/` - Customizable visual themes
+- **Code Transitions**: `src/CodeTransition.tsx` - Smooth section transitions
+
+Key patterns to apply:
+- Code file processing and analysis
+- Progress visualization through content
+- Flexible annotation system
+- Extensible theming architecture
+- Smooth transitions between code sections
 
 ## Remotion Hooks Usage
 Always import and use these Remotion hooks:
@@ -39,6 +68,12 @@ export const ComponentSchema = z.object({
 - Use `useCurrentFrame()` for timing
 - Use `useVideoConfig()` for video dimensions
 
+## Advanced Animation Techniques (from reference projects)
+- **Scene Transitions**: Study `recorder-main/remotion/animations/` for transition patterns
+- **Layout Interpolation**: Use `recorder-main/remotion/layout/` for responsive layouts
+- **Progress Indicators**: Apply `template-code-hike-main/src/ProgressBar.tsx` patterns
+- **Code Transitions**: Learn from `template-code-hike-main/src/CodeTransition.tsx`
+
 ## Testing
 Mock Remotion hooks in tests:
 ```typescript
@@ -54,3 +89,13 @@ jest.mock('remotion', () => ({
 - [src/components/atoms/AnimatedText/index.tsx](mdc:src/components/atoms/AnimatedText/index.tsx) - Text animation example
 - [src/components/atoms/AnimatedCircle/index.tsx](mdc:src/components/atoms/AnimatedCircle/index.tsx) - Circle animation example
 - [src/components/molecules/IntroSection/index.tsx](mdc:src/components/molecules/IntroSection/index.tsx) - Composite component example
+
+## Learning Goals
+When developing new features, reference these projects to:
+1. **Video Recording**: Apply recorder-main patterns for device capture and media processing
+2. **Caption Integration**: Use recorder-main caption processing for text overlays
+3. **Scene Management**: Implement multi-scene composition like recorder-main
+4. **Code Visualization**: Apply template-code-hike-main patterns for code-focused content
+5. **Progress Tracking**: Use template-code-hike-main progress indicators for educational content
+6. **Theme System**: Implement flexible theming like template-code-hike-main
+7. **Animation Transitions**: Study both projects for smooth transition techniques

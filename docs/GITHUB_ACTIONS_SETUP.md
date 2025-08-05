@@ -45,17 +45,48 @@ git push origin main
 
 **Output**: Docker image available at `ghcr.io/{username}/{repository}:{tag}`
 
-### 2. Render Video
+### 2. Generate PR Video (Automatic & Manual)
+
+**File**: `.github/workflows/pr-video-on-merge.yml`
+
+**Triggers**:
+- **Automatic**: When a PR is merged into `main` branch
+- **Manual**: Workflow dispatch for ad-hoc video generation
+
+**Actions**:
+- Pulls the latest Docker image
+- Generates PR video using GitHub API data
+- Stores video files as GitHub artifacts
+- Creates GitHub releases with video attachments
+- Comments on the original PR (automatic mode only)
+
+**Parameters** (for manual runs):
+- `pr_number`: PR number to generate video for (required)
+- `video_type`: Video style - `summary`, `detailed`, or `technical` (default: "summary")
+- `output_name`: Custom output filename (optional)
+
+**Automatic Behavior**:
+- Triggers when PR is merged (not just closed)
+- Uses `summary` video type
+- Creates release with tag: `pr-video-{PR_NUMBER}-automatic`
+- Comments on the merged PR with video download link
+
+**Manual Behavior**:
+- Can generate video for any existing PR
+- Choose video type and custom filename
+- Creates release with tag: `pr-video-{PR_NUMBER}-manual`
+- No automatic PR commenting
+
+### 3. Render Video (Template-based)
 
 **File**: `.github/workflows/render-video.yml`
 
 **Triggers**:
 - Manual workflow dispatch (with customizable parameters)
-- Daily schedule at 2 AM UTC (with default parameters)
 
 **Actions**:
 - Pulls the latest Docker image
-- Runs video rendering with custom parameters
+- Runs video rendering with custom template parameters
 - Stores video files as GitHub artifacts
 - Creates GitHub releases with video attachments
 
@@ -65,7 +96,7 @@ git push origin main
 - `content_header`: Content section header (default: "Discover More")
 - `outro_message`: Outro message (default: "Thank You!")
 
-### 3. Upload to Releases
+### 4. Upload to Releases
 
 **File**: `.github/workflows/upload-to-releases.yml`
 
@@ -77,9 +108,63 @@ git push origin main
 - Creates GitHub releases with video files
 - Adds comments to workflow runs with download links
 
-## 🎬 Using the Video Rendering Workflow
+## 🎬 Using the PR Video Generation Workflow
 
-### Manual Rendering
+### Automatic PR Videos (Recommended)
+
+Videos are **automatically generated** when you merge PRs into the main branch:
+
+1. **Create and merge a PR**:
+   - Make changes on a feature branch
+   - Open a pull request to `main`
+   - Merge the PR (don't just close it)
+
+2. **Automatic processing**:
+   - Video generation starts immediately after merge
+   - Uses `summary` video type by default
+   - Creates a GitHub release with the video
+   - Comments on the merged PR with download link
+
+3. **Access your video**:
+   - Check the **Releases** section for `pr-video-{PR_NUMBER}-automatic`
+   - Download MP4 file from the release
+   - Or click the link in the PR comment
+
+### Manual PR Video Generation (Ad-hoc Testing)
+
+Generate videos for any existing PR on-demand:
+
+1. **Navigate to Actions**:
+   - Go to your repository on GitHub
+   - Click the **Actions** tab
+
+2. **Select PR Video Workflow**:
+   - Click on **"Generate PR Video"** workflow
+
+3. **Run Workflow**:
+   - Click **"Run workflow"** button
+   - Select branch (usually `main`)
+   - **Required**: Enter the PR number
+   - **Optional**: Choose video type (`summary`, `detailed`, `technical`)
+   - **Optional**: Set custom output filename
+   - Click **"Run workflow"**
+
+4. **Monitor Progress**:
+   - Watch the workflow run in real-time
+   - Check logs for any errors
+   - Video will be available in Releases as `pr-video-{PR_NUMBER}-manual`
+
+### Video Types Available
+
+- **Summary** (default): Quick overview with key changes
+- **Detailed**: Comprehensive walkthrough with more context
+- **Technical**: Focus on code changes and technical details
+
+## 🎬 Using the Template Video Rendering Workflow
+
+### Manual Template Rendering
+
+For custom videos not based on PRs:
 
 1. **Navigate to Actions**:
    - Go to your repository on GitHub
@@ -102,14 +187,6 @@ git push origin main
    - Watch the workflow run in real-time
    - Check logs for any errors
    - Download artifacts when complete
-
-### Automated Rendering
-
-The workflow runs daily at 2 AM UTC with default parameters:
-- Title: "Hello World"
-- Subtitle: "Welcome to Remotion"
-- Content Header: "Discover More"
-- Outro Message: "Thank You!"
 
 ## 📦 Docker Image Management
 

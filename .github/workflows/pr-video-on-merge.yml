@@ -1,0 +1,147 @@
+name: Generate PR Video
+
+on:
+  pull_request:
+    types: [closed]
+  workflow_dispatch:
+    inputs:
+      pr_number:
+        description: 'PR number to generate video for'
+        required: true
+        type: string
+      video_type:
+        description: 'Video type'
+        required: false
+        default: 'summary'
+        type: choice
+        options:
+          - summary
+          - detailed
+          - technical
+      output_name:
+        description: 'Custom output filename (optional)'
+        required: false
+        type: string
+
+env:
+  REGISTRY: ghcr.io
+  IMAGE_NAME: ${{ github.repository }}
+
+jobs:
+  generate-pr-video:
+    runs-on: ubuntu-latest
+    # Only run if PR was merged (not just closed) OR if manually triggered
+    if: github.event.pull_request.merged == true || github.event_name == 'workflow_dispatch'
+    
+    permissions:
+      contents: write
+      packages: read
+      pull-requests: read
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+
+    - name: Log in to Container Registry
+      uses: docker/login-action@v3
+      with:
+        registry: ${{ env.REGISTRY }}
+        username: ${{ github.actor }}
+        password: ${{ secrets.GITHUB_TOKEN }}
+
+    - name: Create output directory
+      run: mkdir -p ./output
+
+    - name: Set PR number and video parameters
+      id: params
+      run: |
+        if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+          echo "pr_number=${{ github.event.inputs.pr_number }}" >> $GITHUB_OUTPUT
+          echo "video_type=${{ github.event.inputs.video_type || 'summary' }}" >> $GITHUB_OUTPUT
+          echo "output_name=${{ github.event.inputs.output_name || format('pr-{0}-adhoc', github.event.inputs.pr_number) }}" >> $GITHUB_OUTPUT
+          echo "trigger_type=manual" >> $GITHUB_OUTPUT
+        else
+          echo "pr_number=${{ github.event.number }}" >> $GITHUB_OUTPUT
+          echo "video_type=summary" >> $GITHUB_OUTPUT
+          echo "output_name=pr-${{ github.event.number }}-merged" >> $GITHUB_OUTPUT
+          echo "trigger_type=automatic" >> $GITHUB_OUTPUT
+        fi
+
+    - name: Generate PR Video
+      run: |
+        docker run --rm \
+          -v $(pwd)/output:/usr/src/app/out \
+          -e GITHUB_TOKEN=${{ secrets.GITHUB_TOKEN }} \
+          -e GITHUB_REPOSITORY=${{ github.repository }} \
+          -e PR_NUMBER=${{ steps.params.outputs.pr_number }} \
+          -e VIDEO_TYPE=${{ steps.params.outputs.video_type }} \
+          -e OUTPUT_NAME=${{ steps.params.outputs.output_name }} \
+          ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:main \
+          node render-pr-video.mjs
+
+    - name: List generated files
+      run: ls -la ./output/
+
+    - name: Upload PR Video as Artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: pr-video-${{ steps.params.outputs.pr_number }}-${{ steps.params.outputs.trigger_type }}
+        path: ./output/*.mp4
+        retention-days: 90
+
+    - name: Create Release with PR Video
+      uses: softprops/action-gh-release@v1
+      with:
+        files: ./output/*.mp4
+        tag_name: pr-video-${{ steps.params.outputs.pr_number }}-${{ steps.params.outputs.trigger_type }}
+        name: "PR #${{ steps.params.outputs.pr_number }} Video (${{ steps.params.outputs.video_type }}) - ${{ steps.params.outputs.trigger_type }}"
+        body: |
+          🎬 **PR Video Generated ${{ steps.params.outputs.trigger_type == 'automatic' && 'Automatically' || 'Manually' }}**
+          
+          **Pull Request Details:**
+          - **PR #**: ${{ steps.params.outputs.pr_number }}
+          - **Video Type**: ${{ steps.params.outputs.video_type }}
+          - **Trigger**: ${{ steps.params.outputs.trigger_type == 'automatic' && 'Automatic (on merge)' || 'Manual (workflow dispatch)' }}
+          - **Generated**: ${{ github.event.repository.updated_at }}
+          
+          **Video Details:**
+          - **Type**: ${{ steps.params.outputs.video_type }}
+          - **Format**: MP4 (H.264)
+          - **Output Name**: ${{ steps.params.outputs.output_name }}
+          
+          ${{ steps.params.outputs.trigger_type == 'automatic' && 'This video was automatically generated when the PR was merged.' || 'This video was generated manually via workflow dispatch.' }}
+        draft: false
+        prerelease: false
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+    - name: Comment on PR with Video Link
+      # Only comment on automatic triggers (merged PRs), not manual runs
+      if: github.event_name == 'pull_request'
+      uses: actions/github-script@v7
+      with:
+        script: |
+          const releaseTag = `pr-video-${{ steps.params.outputs.pr_number }}-${{ steps.params.outputs.trigger_type }}`;
+          const videoUrl = `https://github.com/${{ github.repository }}/releases/tag/${releaseTag}`;
+          
+          await github.rest.issues.createComment({
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            issue_number: ${{ steps.params.outputs.pr_number }},
+            body: `🎬 **PR Video Generated Automatically!**
+            
+            Your pull request has been automatically converted into a video summary.
+            
+            📹 **[Download Video](${videoUrl})**
+            
+            **Video Details:**
+            - **Type**: ${{ steps.params.outputs.video_type }}
+            - **Generated**: When this PR was merged
+            
+            The video includes:
+            - Overview of changes made
+            - Key files modified
+            - Visual diff highlights
+            
+            Generated automatically when this PR was merged into the main branch.`
+          });

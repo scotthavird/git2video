@@ -1,0 +1,83 @@
+name: Epic
+description: Create a new epic for organizing related features and tasks
+title: "[EPIC] "
+labels: ["epic", "planning"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        ## Epic Template
+        Use this template to create epics that group related features and tasks.
+
+  - type: input
+    id: epic-title
+    attributes:
+      label: Epic Title
+      description: A clear, descriptive title for this epic
+      placeholder: "Example: GitHub PR Video Generation System"
+    validations:
+      required: true
+
+  - type: textarea
+    id: epic-description
+    attributes:
+      label: Epic Description
+      description: Detailed description of the epic's scope and objectives
+      placeholder: "Describe the overall goal and scope of this epic..."
+    validations:
+      required: true
+
+  - type: textarea
+    id: business-value
+    attributes:
+      label: Business Value
+      description: Why is this epic important? What value does it deliver?
+      placeholder: "Describe the business impact and value proposition..."
+    validations:
+      required: true
+
+  - type: textarea
+    id: acceptance-criteria
+    attributes:
+      label: Epic Acceptance Criteria
+      description: High-level criteria that must be met for this epic to be considered complete
+      placeholder: |
+        - [ ] Criterion 1
+        - [ ] Criterion 2
+        - [ ] Criterion 3
+    validations:
+      required: true
+
+  - type: dropdown
+    id: priority
+    attributes:
+      label: Priority
+      description: What is the priority level for this epic?
+      options:
+        - Critical
+        - High
+        - Medium
+        - Low
+    validations:
+      required: true
+
+  - type: input
+    id: estimated-points
+    attributes:
+      label: Estimated Story Points
+      description: High-level estimation for the entire epic (optional)
+      placeholder: "e.g., 50-100 points"
+
+  - type: textarea
+    id: dependencies
+    attributes:
+      label: Dependencies
+      description: List any dependencies on other epics, systems, or external factors
+      placeholder: "List dependencies here..."
+
+  - type: textarea
+    id: out-of-scope
+    attributes:
+      label: Out of Scope
+      description: What is explicitly NOT included in this epic?
+      placeholder: "List items that are out of scope..."

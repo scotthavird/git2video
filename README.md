@@ -47,9 +47,24 @@ pnpm render # Render video
 
 ### Automated Workflows
 1. **Build & Publish**: Pushes Docker image to `ghcr.io/{username}/{repository}` on main branch
-2. **Render Video**: Manual video generation with customizable parameters
+2. **PR Video Generation**: 
+   - **Automatic**: Videos generated when PRs are merged into main
+   - **Manual**: Generate videos for any PR via Actions tab
+3. **Template Video Rendering**: Manual video generation with customizable parameters
 
 ### Usage
+
+**PR Videos (Automatic)**:
+- Merge any PR into main → Video automatically generated
+- Check Releases section for `pr-video-{PR_NUMBER}-automatic`
+- Original PR gets commented with download link
+
+**PR Videos (Manual Testing)**:
+1. Go to **Actions** tab → **"Generate PR Video"**
+2. Enter PR number and choose video type
+3. Video available in Releases as `pr-video-{PR_NUMBER}-manual`
+
+**Template Videos**:
 1. Go to **Actions** tab → **"Render Video"** 
 2. Click **"Run workflow"** 
 3. Customize parameters (title, subtitle, etc.)
@@ -81,5 +96,9 @@ This project includes Cursor rules to enhance AI-assisted development:
 - **Docker Development** (`.cursor/rules/docker-development.mdc`) - Container development and deployment patterns
 
 These rules help Cursor understand the project structure, coding patterns, and development workflows for better AI assistance.
+
+## License
+
+Note that for some entities a company license is needed. [Read the terms here](https://github.com/remotion-dev/remotion/blob/main/LICENSE.md).
 
 **Built with [Remotion](https://remotion.dev) 🎬**
