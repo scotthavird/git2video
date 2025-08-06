@@ -19,10 +19,12 @@ env:
 jobs:
   test-pr-image:
     runs-on: ubuntu-latest
-    # Only run for successful builds from PRs or manual dispatch
+    # Only run for successful builds from OPEN PRs or manual dispatch
+    # Skip if the PR was merged (closed) or if running on main branch
     if: |
       (github.event.workflow_run.conclusion == 'success' && 
-       github.event.workflow_run.event == 'pull_request') ||
+       github.event.workflow_run.event == 'pull_request' &&
+       github.event.workflow_run.head_branch != 'main') ||
       github.event_name == 'workflow_dispatch'
     
     permissions:
