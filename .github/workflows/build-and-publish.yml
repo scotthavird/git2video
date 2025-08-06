@@ -6,7 +6,7 @@ on:
     tags: [ 'v*' ]
   pull_request:
     branches: [ main ]
-    types: [closed]
+    types: [opened, synchronize, closed]
 
 env:
   REGISTRY: ghcr.io
@@ -15,8 +15,6 @@ env:
 jobs:
   build-and-push:
     runs-on: ubuntu-latest
-    # Only run on pushes to main or tags, or when PRs are merged
-    if: github.event_name == 'push' || (github.event_name == 'pull_request' && github.event.pull_request.merged == true)
     permissions:
       contents: read
       packages: write
@@ -52,7 +50,7 @@ jobs:
       with:
         context: .
         platforms: linux/amd64,linux/arm64
-        push: true
+        push: ${{ github.event_name != 'pull_request' || github.event.pull_request.merged == true || !github.event.pull_request.draft }}
         tags: ${{ steps.meta.outputs.tags }}
         labels: ${{ steps.meta.outputs.labels }}
         cache-from: type=gha
