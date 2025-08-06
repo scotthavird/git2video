@@ -51,7 +51,7 @@ echo ""
 
 echo "5. 📹 Test video rendering:"
 echo "   - Go to: https://github.com/$REPO_NAME/actions"
-echo "   - Select 'Render Video' workflow"
+echo "   - Select 'Render Default Video' workflow"
 echo "   - Click 'Run workflow'"
 echo ""
 

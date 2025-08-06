@@ -58,6 +58,9 @@ docker-compose up remotion-dev
 # Render video
 docker-compose up remotion-render
 
+# Render PR video
+docker-compose up remotion-render
+
 # Build and push
 ./scripts/build-and-push.sh v1.0.0
 

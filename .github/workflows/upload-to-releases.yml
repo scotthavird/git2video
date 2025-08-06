@@ -1,8 +1,8 @@
-name: Upload Video to Releases
+name: Upload Videos to Releases
 
 on:
   workflow_run:
-    workflows: ["Render Video"]
+    workflows: ["Render Videos"]
     types:
       - completed
 
@@ -15,50 +15,96 @@ jobs:
       actions: read
 
     steps:
-    - name: Download artifacts from workflow run
+    - name: Create directories
+      run: |
+        mkdir -p ./videos/default
+        mkdir -p ./videos/pr
+
+    - name: Download default video artifact
       uses: actions/download-artifact@v4
       with:
-        name: rendered-video
-        path: ./videos
+        name: default-video
+        path: ./videos/default
         github-token: ${{ secrets.GITHUB_TOKEN }}
         run-id: ${{ github.event.workflow_run.id }}
+      continue-on-error: true
+
+    - name: Download PR video artifacts
+      uses: actions/download-artifact@v4
+      with:
+        pattern: pr-video-*
+        path: ./videos/pr
+        github-token: ${{ secrets.GITHUB_TOKEN }}
+        run-id: ${{ github.event.workflow_run.id }}
+        merge-multiple: true
+      continue-on-error: true
 
     - name: List downloaded files
       run: |
         echo "Downloaded files:"
         find ./videos -type f -name "*.mp4" -exec ls -la {} \;
 
+    - name: Check for video files
+      id: check-files
+      run: |
+        DEFAULT_COUNT=$(find ./videos/default -name "*.mp4" 2>/dev/null | wc -l)
+        PR_COUNT=$(find ./videos/pr -name "*.mp4" 2>/dev/null | wc -l)
+        TOTAL_COUNT=$((DEFAULT_COUNT + PR_COUNT))
+        
+        echo "default_videos=$DEFAULT_COUNT" >> $GITHUB_OUTPUT
+        echo "pr_videos=$PR_COUNT" >> $GITHUB_OUTPUT
+        echo "total_videos=$TOTAL_COUNT" >> $GITHUB_OUTPUT
+        
+        # Create file list for release body
+        echo "## Video Files Generated" > release_body.md
+        if [ $DEFAULT_COUNT -gt 0 ]; then
+          echo "### Default Videos:" >> release_body.md
+          find ./videos/default -name "*.mp4" -exec basename {} \; | sed 's/^/- /' >> release_body.md
+        fi
+        if [ $PR_COUNT -gt 0 ]; then
+          echo "### PR Videos:" >> release_body.md
+          find ./videos/pr -name "*.mp4" -exec basename {} \; | sed 's/^/- /' >> release_body.md
+        fi
+
     - name: Create Release
+      if: steps.check-files.outputs.total_videos > 0
       uses: softprops/action-gh-release@v1
       with:
-        files: ./videos/*.mp4
-        tag_name: video-${{ github.event.workflow_run.run_number }}
-        name: "Video Render ${{ github.event.workflow_run.run_number }}"
+        files: |
+          ./videos/default/*.mp4
+          ./videos/pr/*.mp4
+        tag_name: videos-${{ github.event.workflow_run.run_number }}
+        name: "Videos Release ${{ github.event.workflow_run.run_number }}"
         body: |
-          🎬 Video rendered automatically via GitHub Actions
+          🎬 **Videos Generated Automatically via GitHub Actions**
           
           **Render Details:**
           - Workflow Run: #${{ github.event.workflow_run.run_number }}
           - Triggered by: ${{ github.event.workflow_run.event }}
           - Completed at: ${{ github.event.workflow_run.updated_at }}
+          - Default Videos: ${{ steps.check-files.outputs.default_videos }}
+          - PR Videos: ${{ steps.check-files.outputs.pr_videos }}
           
-          **Video Files:**
+          **Video Specifications:**
           - Format: MP4 (H.264)
           - Resolution: 1920x1080
-          - Duration: 8 seconds
+          - Generated from: ${{ github.event.workflow_run.head_sha }}
           
+          $(cat release_body.md)
+          
+          ---
           Download the video files above for use in your projects.
         draft: false
         prerelease: false
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-    - name: Comment on workflow run
-      uses: actions/github-script@v7
-      with:
-        script: |
-          const workflowRun = context.payload.workflow_run;
-          console.log(`✅ Video successfully uploaded to releases!`);
-          console.log(`📦 Release: Video Render ${workflowRun.run_number}`);
-          console.log(`🎬 Download: https://github.com/${context.repo.owner}/${context.repo.repo}/releases/tag/video-${workflowRun.run_number}`);
-          console.log(`📁 Files: All MP4 files are now permanently stored in GitHub releases`); 
+    - name: Summary
+      if: steps.check-files.outputs.total_videos > 0
+      run: |
+        echo "✅ Videos successfully uploaded to releases!"
+        echo "📦 Release: Videos Release ${{ github.event.workflow_run.run_number }}"
+        echo "🎬 Download: https://github.com/${{ github.repository }}/releases/tag/videos-${{ github.event.workflow_run.run_number }}"
+        echo "📁 Default Videos: ${{ steps.check-files.outputs.default_videos }}"
+        echo "📁 PR Videos: ${{ steps.check-files.outputs.pr_videos }}"
+        echo "📁 Total Videos: ${{ steps.check-files.outputs.total_videos }}" 
