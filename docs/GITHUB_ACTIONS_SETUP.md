@@ -77,7 +77,7 @@ git push origin main
 - Creates release with tag: `pr-video-{PR_NUMBER}-manual`
 - No automatic PR commenting
 
-### 3. Render Video (Template-based)
+### 3. Render Default Video (Template-based)
 
 **File**: `.github/workflows/render-video.yml`
 
@@ -171,7 +171,7 @@ For custom videos not based on PRs:
    - Click the **Actions** tab
 
 2. **Select Workflow**:
-   - Click on **"Render Video"** workflow
+   - Click on **"Render Default Video"** workflow
 
 3. **Run Workflow**:
    - Click **"Run workflow"** button

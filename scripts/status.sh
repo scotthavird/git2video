@@ -105,9 +105,9 @@ echo "   ./scripts/build-and-push.sh"
 echo "3. 🧪 Test locally:"
 echo "   ./scripts/test-local.sh"
 
-echo "4. 📹 Render video in GitHub Actions:"
+echo "4. 📹 Render Default video  in GitHub Actions:"
 echo "   - Go to: https://github.com/$REPO_NAME/actions"
-echo "   - Select 'Render Video' workflow"
+echo "   - Select 'Render Default Video' workflow"
 echo "   - Click 'Run workflow'"
 
 echo "5. 📚 Read documentation:"
