@@ -77,7 +77,7 @@ jobs:
           -e VIDEO_TYPE=${{ steps.params.outputs.video_type }} \
           -e OUTPUT_NAME=${{ steps.params.outputs.output_name }} \
           ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:main \
-          node render-pr-video.mjs
+          npx tsx render-pr-video.ts
 
     - name: List generated files
       run: ls -la ./output/
