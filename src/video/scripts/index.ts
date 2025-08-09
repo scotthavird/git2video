@@ -1,3 +1,8 @@
+export * from './adapters/ContentAdapter';
+export * from './adapters/DurationAdapter';
+export * from './ScriptGenerator';
+export * from './templates';
+export * from './types';
 /**
  * Main exports for the video script generation system
  * Provides complete script generation capabilities for GitHub PR videos
@@ -8,134 +13,54 @@ export { ScriptGenerator } from './ScriptGenerator';
 
 // Core types and interfaces
 export type {
-  // Core script types
-  VideoScript,
-  ScriptSection,
-  ScriptSectionType,
-  VisualCue,
-  SectionPriority,
-  
-  // Template system
-  ScriptTemplate,
-  TemplateType,
-  SectionDefinition,
-  SectionOrderingRule,
-  TransitionRule,
-  TemplateDefaults,
-  AudienceSuitability,
-  DurationAllocation,
-  ContentRequirement,
-  VisualRequirement,
-  
-  // Audience and style
-  ScriptAudience,
-  AudienceType,
-  TechnicalLevel,
-  ProjectFamiliarity,
-  CommunicationStyle,
-  NarrativeStyle,
-  NarrativeTone,
-  NarrativePacing,
-  StorytellingApproach,
-  LanguageComplexity,
-  EmphasisStyle,
-  
-  // Content selection and adaptation
-  ContentSelectionStrategy,
-  ContentType,
-  RelevanceScoring,
-  RelevanceFactor,
-  ScoringAlgorithm,
-  NormalizationMethod,
-  PrioritizationRule,
-  FilteringRule,
-  ContentAdaptationRule,
-  AdaptationSettings,
-  DurationAdaptation,
-  AudienceAdaptation,
-  ContentAdaptation,
-  TechnicalAdaptation,
-  
-  // Script generation
-  ScriptGenerationConfig,
-  ScriptGenerationResult,
-  ScriptMetadata,
-  QualityMetrics,
-  QualityAssessment,
-  ScriptGenerationSuggestion,
-  GenerationPerformance,
-  
-  // Rules and conditions
-  InclusionCondition,
-  ConditionType,
-  ConditionOperator,
-  DynamicDurationRule,
-  CountingCriteria,
-  FilterCriteria,
-  FilterAction,
-  AdaptationAction,
-  AdaptationActionType,
-  AdaptationStrategy,
-  
-  // Language and technical rules
-  LanguageRule,
-  LanguageAction,
-  TechnicalDepthRule,
-  TechnicalAdjustment,
-  EmphasisRule,
-  EmphasisAdjustment,
-  EmphasisAspect,
-  ContentTransformationRule,
-  SummarizationRule,
-  SummarizationStrategy,
-  ExpansionRule,
-  ExpansionStrategy,
-  
-  // Code-specific types
-  CodeExampleRule,
-  CodeSelectionCriteria,
-  CodePrioritization,
-  CodeFilteringRule,
-  CodePresentationStyle,
-  AnnotationStyle,
-  JargonRule,
-  JargonDetectionCriteria,
-  JargonExplanationStrategy,
-  ConceptRule,
-  ConceptIdentificationCriteria,
-  ConceptIntroductionStrategy,
-  
-  // Suitability and evaluation
-  SuitabilityScoring,
-  SuitabilityCriteria,
-  
-  // Function types
-  ScoringFunction,
-  TransformationFunction,
-  EvaluationFunction
+    AdaptationAction,
+    AdaptationActionType, AdaptationSettings, AdaptationStrategy, AnnotationStyle, AudienceAdaptation, AudienceSuitability, AudienceType,
+    // Code-specific types
+    CodeExampleRule, CodeFilteringRule,
+    CodePresentationStyle, CodePrioritization, CodeSelectionCriteria, CommunicationStyle, ConceptIdentificationCriteria,
+    ConceptIntroductionStrategy, ConceptRule, ConditionOperator, ConditionType, ContentAdaptation, ContentAdaptationRule, ContentRequirement,
+    // Content selection and adaptation
+    ContentSelectionStrategy, ContentTransformationRule, ContentType, CountingCriteria, DurationAdaptation, DurationAllocation, DynamicDurationRule, EmphasisAdjustment,
+    EmphasisAspect, EmphasisRule, EmphasisStyle, EvaluationFunction, ExpansionRule,
+    ExpansionStrategy, FilterAction, FilterCriteria, FilteringRule, GenerationPerformance,
+
+    // Rules and conditions
+    InclusionCondition, JargonDetectionCriteria,
+    JargonExplanationStrategy, JargonRule, LanguageAction, LanguageComplexity,
+    // Language and technical rules
+    LanguageRule, NarrativePacing, NarrativeStyle,
+    NarrativeTone, NormalizationMethod,
+    PrioritizationRule, ProjectFamiliarity, QualityAssessment, QualityMetrics, RelevanceFactor, RelevanceScoring, ScoringAlgorithm,
+    // Function types
+    ScoringFunction,
+    // Audience and style
+    ScriptAudience,
+    // Script generation
+    ScriptGenerationConfig,
+    ScriptGenerationResult, ScriptGenerationSuggestion, ScriptMetadata, ScriptSection,
+    ScriptSectionType,
+    // Template system
+    ScriptTemplate, SectionDefinition,
+    SectionOrderingRule, SectionPriority, StorytellingApproach, SuitabilityCriteria,
+    // Suitability and evaluation
+    SuitabilityScoring, SummarizationRule,
+    SummarizationStrategy, TechnicalAdaptation, TechnicalAdjustment, TechnicalDepthRule, TechnicalLevel, TemplateDefaults, TemplateType, TransformationFunction, TransitionRule,
+    // Core script types
+    VideoScript, VisualCue, VisualRequirement
 } from './types';
 
 // Adapter exports
 export {
-  ContentAdapter,
-  DurationAdapter,
-  type AdaptedContent,
-  type ContentAdaptationMetadata,
-  type DurationOptimizationResult,
-  type OptimizedSection,
-  type ContentCut,
-  type PriorityAdjustment,
-  type DurationOptimizationMetadata,
-  type DurationConstraints,
-  type DurationValidationResult,
-  type DurationViolation
+    ContentAdapter,
+    DurationAdapter,
+    type AdaptedContent,
+    type ContentAdaptationMetadata, type ContentCut, type DurationConstraints, type DurationOptimizationMetadata, type DurationOptimizationResult, type DurationValidationResult,
+    type DurationViolation, type OptimizedSection, type PriorityAdjustment
 } from './adapters';
 
 // Template exports
 export {
-  SummaryTemplate,
-  DetailedTemplate,
-  TechnicalTemplate
+    DetailedTemplate, SummaryTemplate, TechnicalTemplate
 } from './templates';
 
 // Utility functions for common operations
@@ -286,8 +211,7 @@ export const ScriptUtils = {
 
 // Export commonly used type aliases for convenience
 export type {
-  TemplateType as VideoTemplateType,
-  ScriptAudience as VideoAudience,
-  ScriptGenerationConfig as VideoScriptConfig,
-  ScriptGenerationResult as VideoScriptResult
+    ScriptAudience as VideoAudience,
+    ScriptGenerationConfig as VideoScriptConfig,
+    ScriptGenerationResult as VideoScriptResult, TemplateType as VideoTemplateType
 } from './types';

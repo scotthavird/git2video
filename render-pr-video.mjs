@@ -55,6 +55,8 @@ const { GitHubApiClient } = await import('./src/github/client.js');
 const { GitHubPRFetcher } = await import('./src/github/fetcher.js');
 const { PRVideoTransformer } = await import('./src/github/transformer.js');
 const { ScriptGenerator } = await import('./src/video/scripts/ScriptGenerator.js');
+const { generateNarrative } = await import('./src/narrative/index.js');
+const { generateNarrative } = await import('./src/narrative/index.js');
 
 async function fetchPRData() {
   console.log('📡 Fetching PR data from GitHub...');
@@ -117,10 +119,41 @@ async function generateVideoContent(prData) {
 
     console.log('✅ Video content generated');
 
+    // Generate persona-based narrative via Ollama (best-effort)
+    let narrative;
+    try {
+      const ollamaBase = process.env.OLLAMA_BASE_URL || 'http://localhost:11434';
+      const model = process.env.NARRATIVE_MODEL || 'llama3.1:8b';
+      const persona = process.env.PERSONA || 'executive';
+      const readmeText = await (async () => {
+        try {
+          const res = await fetch(`https://api.github.com/repos/${config.repository}/readme`, {
+            headers: {
+              Accept: 'application/vnd.github.v3.raw',
+              Authorization: `Bearer ${config.githubToken}`,
+              'User-Agent': 'git2video-pr-analyzer/1.0.0',
+            },
+          });
+          if (!res.ok) return undefined;
+          return await res.text();
+        } catch {
+          return undefined;
+        }
+      })();
+      narrative = await generateNarrative(
+        { pr: prData, metadata: videoMetadata, readmeText },
+        { baseUrl: ollamaBase, model, persona }
+      );
+      console.log(`🗣️ Narrative generated with ${model} (${persona})`);
+    } catch (e) {
+      console.warn('Narrative generation skipped or failed:', e.message);
+    }
+
     return {
       metadata: videoMetadata,
       script: script,
       prData: prData,
+      narrative,
     };
   } catch (error) {
     console.error('❌ Failed to generate video content:', error.message);
@@ -154,6 +187,7 @@ async function renderVideo(videoContent) {
       metadata: videoContent.metadata,
       script: videoContent.script,
       title: config.videoTitle || videoContent.metadata.title,
+      narrative: videoContent.narrative,
     };
 
     console.log(`   Composition: ${compositionId}`);

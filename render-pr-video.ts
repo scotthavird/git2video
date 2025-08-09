@@ -50,6 +50,23 @@ if (!config.prNumber) {
   process.exit(1);
 }
 
+async function fetchRepositoryReadme(repoFullName: string, token: string): Promise<string | undefined> {
+  try {
+    const url = `https://api.github.com/repos/${repoFullName}/readme`;
+    const res = await fetch(url, {
+      headers: {
+        Accept: 'application/vnd.github.v3.raw',
+        Authorization: `Bearer ${token as string}`,
+        'User-Agent': 'git2video-pr-analyzer/1.0.0',
+      },
+    });
+    if (!res.ok) return undefined;
+    return await res.text();
+  } catch {
+    return undefined;
+  }
+}
+
 async function fetchPRData() {
   console.log('📡 Fetching PR data from GitHub...');
   
@@ -59,13 +76,13 @@ async function fetchPRData() {
     const { GitHubPRFetcher } = await import('./src/github/fetcher');
     
     const client = new GitHubApiClient({
-      token: config.githubToken,
+      token: (config.githubToken as string),
       timeout: 30000,
     });
 
     const fetcher = new GitHubPRFetcher(client);
-    const [owner, repo] = config.repository.split('/');
-    const prNumber = parseInt(config.prNumber);
+    const [owner, repo] = (config.repository as string).split('/');
+    const prNumber = parseInt(config.prNumber as string);
 
     console.log(`   Repository: ${owner}/${repo}`);
     console.log(`   PR Number: #${prNumber}`);
@@ -109,10 +126,12 @@ async function generateVideoContent(prData) {
     // Import video generation modules
     const { PRVideoTransformer } = await import('./src/github/transformer');
     const { ScriptGenerator } = await import('./src/video/scripts/ScriptGenerator');
+    const { generateNarrative } = await import('./src/narrative');
     
     // Transform PR data for video
     const transformer = new PRVideoTransformer();
-    const videoMetadata = transformer.transform(prData, config.videoType);
+    const vt = (['summary','detailed','technical'].includes(String(config.videoType)) ? (config.videoType as 'summary'|'detailed'|'technical') : 'summary');
+    const videoMetadata = transformer.transform(prData, vt);
 
     console.log(`   Video Type: ${config.videoType}`);
     console.log(`   Duration: ${videoMetadata.duration}s`);
@@ -121,10 +140,32 @@ async function generateVideoContent(prData) {
     // Generate script
     const scriptGenerator = new ScriptGenerator();
     const script = await scriptGenerator.generateScript(videoMetadata, {
-      videoType: config.videoType,
+      templateType: (['summary','detailed','technical'].includes(String(config.videoType)) ? (config.videoType as any) : 'summary'),
       targetDuration: videoMetadata.duration,
-      audience: 'mixed', // Default to mixed audience
+      audience: {
+        primary: 'general',
+        technicalLevel: 'intermediate',
+        projectFamiliarity: 'basic',
+        communicationStyle: 'presentation',
+      },
+      style: { tone: 'professional', pacing: 'moderate', approach: 'chronological', complexity: 'moderate', emphasis: 'impact_focused' },
     });
+
+    // Generate persona-based narrative via Ollama (best-effort)
+    let narrative: { transcript: string; model: string; persona: string } | undefined;
+    try {
+      const ollamaBase = process.env.OLLAMA_BASE_URL || 'http://localhost:11434';
+      const model = process.env.NARRATIVE_MODEL || 'llama3.1:8b';
+      const persona = (process.env.PERSONA || 'executive') as any;
+      const readmeText = await fetchRepositoryReadme(config.repository!, config.githubToken!);
+      narrative = await generateNarrative(
+        { pr: prData, metadata: videoMetadata, readmeText },
+        { baseUrl: ollamaBase, model, persona }
+      );
+      console.log(`🗣️ Narrative generated with ${model} (${persona})`);
+    } catch (e) {
+      console.warn('Narrative generation skipped or failed:', (e as Error).message);
+    }
 
     console.log('✅ Video content generated');
 
@@ -132,6 +173,7 @@ async function generateVideoContent(prData) {
       metadata: videoMetadata,
       script: script,
       prData: prData,
+      narrative,
     };
   } catch (error) {
     console.error('❌ Failed to generate video content:', error.message);
@@ -157,7 +199,7 @@ async function renderVideo(videoContent) {
       'technical': 'PRTechnicalVideo',
     };
 
-    const compositionId = compositionMap[config.videoType] || 'PRSummaryVideo';
+    const compositionId = compositionMap[String(config.videoType)] || 'PRSummaryVideo';
 
     // Prepare input props for Remotion
     const inputProps = {
@@ -165,6 +207,7 @@ async function renderVideo(videoContent) {
       metadata: videoContent.metadata,
       script: videoContent.script,
       title: config.videoTitle || videoContent.metadata.title,
+      narrative: videoContent.narrative,
     };
 
     console.log(`   Composition: ${compositionId}`);
@@ -195,11 +238,8 @@ async function renderVideo(videoContent) {
       outputLocation: outputPath,
       chromiumOptions: {
         enableMultiProcessOnLinux: true,
-        args: [
-          '--no-sandbox',
-          '--disable-setuid-sandbox',
-          '--disable-dev-shm-usage',
-        ],
+        disableWebSecurity: true,
+        gl: 'angle',
       },
       inputProps,
       onProgress: ({ progress }) => {

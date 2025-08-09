@@ -24,7 +24,14 @@ services:
       - VIDEO_TYPE=${VIDEO_TYPE:-summary}
       - VIDEO_TITLE=${VIDEO_TITLE}
       - OUTPUT_NAME=${OUTPUT_NAME}
+      # LLM Narrative Generation
+      - OLLAMA_BASE_URL=${OLLAMA_BASE_URL:-http://ollama:11434}
+      - NARRATIVE_MODEL=${NARRATIVE_MODEL:-llama3.1:8b}
+      - PERSONA=${PERSONA:-executive}
     command: ["npx", "tsx", "render-pr-video.ts"]
+    depends_on:
+      ollama:
+        condition: service_healthy
   
   remotion-dev:
     build: .
@@ -39,3 +46,24 @@ services:
     environment:
       - NODE_ENV=development
     command: ["npm", "run", "dev"] 
+
+  # Ollama LLM service for narrative generation
+  ollama:
+    image: ollama/ollama:latest
+    container_name: ollama
+    restart: unless-stopped
+    ports:
+      - "11434:11434"
+    volumes:
+      - ollama:/root/.ollama
+    healthcheck:
+      test: ["CMD", "curl", "-sf", "http://localhost:11434/api/tags"]
+      interval: 10s
+      timeout: 5s
+      retries: 30
+    environment:
+      - OLLAMA_KEEP_ALIVE=5m
+    command: ["serve"]
+
+volumes:
+  ollama:

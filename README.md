@@ -97,6 +97,45 @@ This project includes Cursor rules to enhance AI-assisted development:
 
 These rules help Cursor understand the project structure, coding patterns, and development workflows for better AI assistance.
 
+## Persona-based Narrative Generation (Open-source LLM via Ollama)
+
+This template can generate a persona-based transcript from PR context and the repository README using an open-source model running locally in an Ollama sidecar (e.g., Llama 3.1 8B Instruct).
+
+Steps:
+
+1. Start the Ollama service:
+
+```bash
+docker compose up -d ollama
+```
+
+2. Pull a model once inside the container (examples):
+
+```bash
+docker exec -it ollama bash -lc "ollama pull llama3.1:8b"
+# Alternatives: qwen2.5:7b, mistral:7b-instruct
+```
+
+3. Set env (see `env.example`):
+
+```bash
+export GITHUB_TOKEN=...           # required
+export GITHUB_REPOSITORY=owner/repo
+export PR_NUMBER=123
+export VIDEO_TYPE=summary         # summary|detailed|technical
+export OLLAMA_BASE_URL=http://ollama:11434
+export NARRATIVE_MODEL=llama3.1:8b
+export PERSONA=executive          # executive|product|engineering|qa|design|marketing|general|external
+```
+
+4. Render the PR video with narrative:
+
+```bash
+docker compose up pr-video-render
+```
+
+The narrative is available to Remotion compositions via `inputProps.narrative`. The `PRSummaryVideo` overlays the transcript as a small caption by default.
+
 ## License
 
 Note that for some entities a company license is needed. [Read the terms here](https://github.com/remotion-dev/remotion/blob/main/LICENSE.md).

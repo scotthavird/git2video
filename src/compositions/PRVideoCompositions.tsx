@@ -1,7 +1,7 @@
 import React from 'react';
-import { useVideoConfig, AbsoluteFill, Sequence } from 'remotion';
-import { PRHeader } from '../components/molecules/pr/PRHeader';
+import { AbsoluteFill, Sequence, useVideoConfig } from 'remotion';
 import { CommitCard } from '../components/molecules/pr/CommitCard';
+import { PRHeader } from '../components/molecules/pr/PRHeader';
 import { DiffRevealAnimation } from '../components/molecules/pr/code/DiffRevealAnimation';
 import { processGitHubFile } from '../components/molecules/pr/code/utils/diffProcessor';
 import { PRVideoData } from '../github/types';
@@ -12,6 +12,7 @@ interface PRVideoCompositionProps {
   metadata: VideoMetadata;
   script: VideoScript;
   title?: string;
+  narrative?: { transcript: string; model: string; persona: string };
 }
 
 // Summary Video Composition (2-3 minutes)
@@ -19,6 +20,7 @@ export const PRSummaryVideo: React.FC<PRVideoCompositionProps> = ({
   prData,
   metadata,
   script,
+  narrative,
 }) => {
   const { fps } = useVideoConfig();
 
@@ -49,6 +51,29 @@ export const PRSummaryVideo: React.FC<PRVideoCompositionProps> = ({
           />
         </AbsoluteFill>
       </Sequence>
+
+      {/* Narrative (if available) - overlay small caption in corner */}
+      {narrative?.transcript && (
+        <Sequence from={0} durationInFrames={14 * fps}>
+          <div
+            style={{
+              position: 'absolute',
+              bottom: 24,
+              right: 24,
+              width: '30%',
+              maxHeight: '60%',
+              overflow: 'hidden',
+              fontSize: 18,
+              lineHeight: 1.35,
+              color: metadata.theme.textColor,
+              opacity: 0.7,
+              whiteSpace: 'pre-wrap',
+            }}
+          >
+            {narrative.transcript}
+          </div>
+        </Sequence>
+      )}
 
       {/* Key Stats - 4-8 seconds */}
       <Sequence from={4 * fps} durationInFrames={4 * fps}>
@@ -214,6 +239,7 @@ export const PRDetailedVideo: React.FC<PRVideoCompositionProps> = ({
   prData,
   metadata,
   script,
+  narrative,
 }) => {
   const { fps } = useVideoConfig();
 
@@ -301,6 +327,7 @@ export const PRTechnicalVideo: React.FC<PRVideoCompositionProps> = ({
   prData,
   metadata,
   script,
+  narrative,
 }) => {
   const { fps } = useVideoConfig();
 

@@ -1,27 +1,25 @@
 import React from 'react';
 import { Composition, registerRoot } from 'remotion';
 import { z } from 'zod';
-import { HelloWorldComposition } from './components/organisms/HelloWorldComposition';
 import { DiffRevealAnimation } from './components/molecules/pr/code/DiffRevealAnimation';
 import { FileNavigationAnimation } from './components/molecules/pr/code/FileNavigationAnimation';
 import { LineByLineWalkthrough } from './components/molecules/pr/code/LineByLineWalkthrough';
-import { PRHeader } from './components/molecules/pr/PRHeader';
-import { CommitCard } from './components/molecules/pr/CommitCard';
 import { processGitHubFile } from './components/molecules/pr/code/utils/diffProcessor';
-import { TestDataBuilder } from './video/integration/testUtils';
-import { PRSummaryVideo, PRDetailedVideo, PRTechnicalVideo } from './compositions/PRVideoCompositions';
+import { PRHeader } from './components/molecules/pr/PRHeader';
+import { HelloWorldComposition } from './components/organisms/HelloWorldComposition';
+import { PRDetailedVideo, PRSummaryVideo, PRTechnicalVideo } from './compositions/PRVideoCompositions';
 
 // Leadership persona components
 import { ExecutiveImpactSummary } from './components/organisms/ExecutiveImpactSummary';
 import { ExecutiveImpactSummarySchema } from './components/organisms/ExecutiveImpactSummary/types';
-import { TeamVelocityDashboard } from './components/organisms/TeamVelocityDashboard';
-import { TeamVelocityDashboardSchema } from './components/organisms/TeamVelocityDashboard/types';
-import { StrategicMilestones } from './components/organisms/StrategicMilestones';
-import { StrategicMilestonesSchema } from './components/organisms/StrategicMilestones/types';
 import { RiskAndQualityMetrics } from './components/organisms/RiskAndQualityMetrics';
 import { RiskAndQualityMetricsSchema } from './components/organisms/RiskAndQualityMetrics/types';
 import { ROIVisualization } from './components/organisms/ROIVisualization';
 import { ROIVisualizationSchema } from './components/organisms/ROIVisualization/types';
+import { StrategicMilestones } from './components/organisms/StrategicMilestones';
+import { StrategicMilestonesSchema } from './components/organisms/StrategicMilestones/types';
+import { TeamVelocityDashboard } from './components/organisms/TeamVelocityDashboard';
+import { TeamVelocityDashboardSchema } from './components/organisms/TeamVelocityDashboard/types';
 
 // Define schema for visual editing
 export const HelloWorldSchema = z.object({
@@ -421,6 +419,13 @@ export const RemotionRoot: React.FC = () => {
           metadata: z.any(),
           script: z.any(),
           title: z.string().optional(),
+          narrative: z
+            .object({
+              transcript: z.string(),
+              model: z.string(),
+              persona: z.string(),
+            })
+            .optional(),
         })}
         defaultProps={{
           prData: {
