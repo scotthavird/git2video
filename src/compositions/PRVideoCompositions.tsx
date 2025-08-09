@@ -4,8 +4,9 @@ import { CommitCard } from '../components/molecules/pr/CommitCard';
 import { PRHeader } from '../components/molecules/pr/PRHeader';
 import { DiffRevealAnimation } from '../components/molecules/pr/code/DiffRevealAnimation';
 import { processGitHubFile } from '../components/molecules/pr/code/utils/diffProcessor';
+import type { VideoMetadata } from '../github/transformer';
 import { PRVideoData } from '../github/types';
-import { VideoMetadata, VideoScript } from '../video/scripts/types';
+import type { VideoScript } from '../narrative/scripts';
 
 interface PRVideoCompositionProps {
   prData: PRVideoData;

@@ -54,8 +54,7 @@ if (!config.prNumber) {
 const { GitHubApiClient } = await import('./src/github/client.js');
 const { GitHubPRFetcher } = await import('./src/github/fetcher.js');
 const { PRVideoTransformer } = await import('./src/github/transformer.js');
-const { ScriptGenerator } = await import('./src/video/scripts/ScriptGenerator.js');
-const { generateNarrative } = await import('./src/narrative/index.js');
+const { ScriptGenerator } = await import('./src/narrative/scripts/index.js');
 const { generateNarrative } = await import('./src/narrative/index.js');
 
 async function fetchPRData() {

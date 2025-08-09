@@ -125,7 +125,7 @@ async function generateVideoContent(prData) {
   try {
     // Import video generation modules
     const { PRVideoTransformer } = await import('./src/github/transformer');
-    const { ScriptGenerator } = await import('./src/video/scripts/ScriptGenerator');
+    const { ScriptGenerator } = await import('./src/narrative/scripts');
     const { generateNarrative } = await import('./src/narrative');
     
     // Transform PR data for video
